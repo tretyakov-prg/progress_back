@@ -18,13 +18,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.set('views', path.join(__dirname, '/views'))
-app.set('view engine', 'ejs')
-
-// app.get('/', function(req, res){
-//   res.render('index.ejs')
-// })
-
 // view engine setup
 app.use('/',    indexRouter);
 app.use('/jwt', JWTRouter);

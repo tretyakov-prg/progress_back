@@ -3,7 +3,6 @@ var IndexService = require('../services/index.service')
 exports.getUsers = async (req, res) => {
     try {
         var users = await IndexService.getUsers()
-        console.log(users)
         return res.status(200).json({ status: 200, data: users, message: "List all Users" });
     } catch (e) {
         return res.status(400).json({ status: 400, message: "Control: " + e.message });
@@ -15,7 +14,7 @@ exports.getUser = async (req, res) => {
         var user = await IndexService.getUser(req,res);
         if (user === 0) 
         {
-            return res.status(500).json({ status: 200, data: user, message: "User by id" });
+            return res.status(500).json({ status: 500, data: user, message: "Error User by id" });
         }
         else
         {
