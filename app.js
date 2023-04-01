@@ -9,6 +9,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index.router');
 var JWTRouter = require('./routes/jwt.router');
+var TaskRouter = require('./routes/task.router');
 
 const Port = process.env.PORT || 7000
 
@@ -19,8 +20,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // view engine setup
-app.use('/',    indexRouter);
-app.use('/jwt', JWTRouter);
+//app.use('/',    indexRouter);
+//app.use('/jwt', JWTRouter);
+app.use('/task', TaskRouter);
 
 app.use(logger('dev'));
 app.use(express.json());
