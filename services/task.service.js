@@ -1,35 +1,44 @@
 var db = require('../models/mysql.model');
 
-exports.getUsers = async () => {
+exports.getTasks = async () => {
     try {
-        //var sql='SELECT * FROM quest_bot';
-        var sql='SELECT task_items.guid, task_items.task, task_items.description , task_status.guid as sguid FROM task_items INNER JOIN task_status ON task_items.status = task_status.id'
-
-        return await db.query(sql)
-        .then(result =>{
-            const dadata = [];
-            result[0].forEach(element => {
-                console.log(element.sguid)
-                dadata.push()
-            });
-
-            return result[0];
-          })
-          .catch(err =>{
-            console.log(err);
-          });
+        var sql_status = 'SELECT * FROM progressdb.task_status';
+        var sql_items='SELECT task_items.guid, task_items.task, task_items.description , task_status.guid as sguid, task_status.title FROM task_items INNER JOIN task_status ON task_items.status = task_status.id';
+        var dacols = await db.query(sql_status).then(result =>{return result[0]}).catch(err =>{console.log(err)});
+        var daitems = await db.query(sql_items).then(items => {return items[0]}).catch(err =>{console.log(err);})
+        var col = {};
+        dacols.forEach(cl => {
+            col[cl.guid] = {title: cl.title, items:[]};
+            daitems.forEach(it => {
+                if(it.sguid === cl.guid)
+                {
+                    col[cl.guid].items.push({id: it.guid, Task: it.task, Description: it.description, Due_Date: '25-May-2023'})
+                }
+            })
+        })
+        return col;
     } catch (error) {
         throw new Error('Failed to execute MySQL query');
     }
 }
 
-exports.getUser = async (req, res) => {
+exports.getStatus = async () => {
     try {
-        if(req.params.id !== 'favicon.ico' && req.params.id !== 'jwt')
-        {
-            var sql=`SELECT * FROM quest_bot where id = ${req.params.id}`;
+        var sql_status = 'SELECT * FROM progressdb.task_status';
+        var dacols = await db.query(sql_status).then(result =>{return result[0]}).catch(err =>{console.log(err)});
+        return dacols;
+    } catch (error) {
+        throw new Error('Failed to execute MySQL query');
+    }
+}
 
-            return await db.query(sql)
+exports.getTask = async (req, res) => {
+    try {
+        //console.log(req.params);
+        if(req.params.id !== 'favicon.ico' && req.params.id !== 'jwt')
+        { 
+            var sql=`SELECT task_items.guid, task_items.task, task_items.description , task_status.guid as sguid, task_status.title, task_status.id FROM task_items INNER JOIN task_status ON task_items.status = task_status.id WHERE task_items.guid = ?`
+            return await db.query(sql, [req.params.guid])
             .then(result =>{
                 if (result[0].length > 0)
                 {
@@ -54,19 +63,15 @@ exports.getUser = async (req, res) => {
     }
 }
 
-exports.setUser = async (req, res) => {
+exports.setTasks = async (req, res) => {
     try
     {
-        var sql=`INSERT INTO quest_bot (name, nicname, ansver_true, ansver_false) VALUES (?,?,?,?)`;
+        var sql_status = 'SELECT id FROM progressdb.task_status WHERE guid = ?';
+        var dacols = await db.query(sql_status, [req.body.status]).then(result =>{return result[0]}).catch(err =>{console.log(err)});
 
-        return await db.query(sql, [req.body.name, req.body.nicname, req.body.ansver_true, req.body.ansver_false])
-        .then(result =>{
-           console.log(result[0]);
-           return result[0];
-          })
-          .catch(err =>{
-            console.log(err);
-          });
+        var sql=`INSERT INTO task_items (guid, task, description, status) VALUES (?,?,?,?)`;
+        return await db.query(sql, [req.body.guid, req.body.task, req.body.description, dacols[0].id])
+        .then(result =>{return result[0]}).catch(err =>{console.log(err)});
     } 
     catch (error) 
     {
@@ -74,19 +79,21 @@ exports.setUser = async (req, res) => {
     }
 }
 
-exports.updateUser = async (req, res) => {
+exports.updateTask = async (req, res) => {
     try
     {
-        var sql=`UPDATE quest_bot SET name = ?, nicname = ?, ansver_true = ?, ansver_false = ? WHERE id = ?`;
-
-        return await db.query(sql, [req.body.name, req.body.nicname, req.body.ansver_true, req.body.ansver_false, req.body.id])
+        const {guid, status} = req.body;
+        sql_id_status = `SELECT id FROM task_status WHERE guid = ?`;
+        var id = await db.query(sql_id_status, [status]).then(result =>{return result[0]}).catch(err =>{console.log(err)});
+        var sql=`UPDATE task_items SET status = ? WHERE guid = ?`;
+        
+        return await db.query(sql, [id[0].id, guid])
         .then(result =>{
-           console.log(result[0]);
            return result[0];
-          })
-          .catch(err =>{
+        })
+        .catch(err =>{
             console.log(err);
-          });
+        });
     } 
     catch (error) 
     {
@@ -94,14 +101,13 @@ exports.updateUser = async (req, res) => {
     }
 }
 
-exports.deleteUser = async (req, res) => {
+exports.deleteTask = async (req, res) => {
     try
     {
-        var sql=`DELETE FROM quest_bot WHERE id = ?`;
-
+        var sql=`DELETE FROM task_items WHERE guid = ?`;
+        console.log(req.params);
         return await db.query(sql, [req.params.id])
         .then(result =>{
-           console.log(result[0]);
            return result[0];
           })
           .catch(err =>{

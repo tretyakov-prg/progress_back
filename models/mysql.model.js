@@ -7,5 +7,10 @@ var conn = mysql.createConnection({
   password: process.env.PASSWORD,      // Replace with your database password
   database: process.env.DATABASE // // Replace with your database Name
 }).promise();
-
-module.exports = conn;
+var pool = mysql.createPool({
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE
+}).promise();
+module.exports = pool;

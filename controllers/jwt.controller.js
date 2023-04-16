@@ -19,8 +19,8 @@ exports.getJWT = async (req, res) => {
 
 exports.setJWT = async (req, res) => {
     try {
-        var users = await JWTService.setJWT(req)
-        return res.status(200).json({ status: 200, data: users, message: "Set jwt" });
+        var token = await JWTService.setJWT(req)
+        return res.status(200).json({ status: 200, accessToken: token, message: "Set jwt" });
     } catch (e) {
         return res.status(400).json({ status: 400, message: "Control: " + e.message });
     }

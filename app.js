@@ -21,7 +21,7 @@ app.use(cors());
 
 // view engine setup
 //app.use('/',    indexRouter);
-//app.use('/jwt', JWTRouter);
+app.use('/jwt', JWTRouter);
 app.use('/task', TaskRouter);
 
 app.use(logger('dev'));

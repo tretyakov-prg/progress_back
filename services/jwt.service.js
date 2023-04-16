@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken')
-const secret = process.env.SECRET || "Days17"
+const jwt = require('jsonwebtoken');
+const secret = process.env.SECRET || "Days17";
 
 exports.getJWT = (req) => {
     try {
@@ -21,8 +21,8 @@ exports.getJWT = (req) => {
 exports.setJWT = (req) => {
     try {    
         let token = jwt.sign({
-            user: req.body.name,
-            email: req.body.email
+            email: req.body.email,
+            password: req.body.password
         }, secret, {expiresIn: 60 * 60})
         return token;
     } catch (error) {

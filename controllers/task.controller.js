@@ -1,24 +1,33 @@
 var TaskService = require('../services/task.service');
 
-exports.getUsers = async (req, res) => {
+exports.getTasks = async (req, res) => {
     try {
-        var users = await TaskService.getUsers()
-        return res.status(200).json({ status: 200, data: users, message: "List all Users" });
+        var task = await TaskService.getTasks()
+        return res.status(200).json({ status: 200, data: task, message: "List all Task" });
     } catch (e) {
         return res.status(400).json({ status: 400, message: "Control: " + e.message });
     }
 }
 
-exports.getUser = async (req, res) => {
+exports.getStatus = async (req, res) => {
     try {
-        var user = await TaskService.getUser(req,res);
+        var status = await TaskService.getStatus()
+        return res.status(200).json({ status: 200, data: status, message: "List all Status" });
+    } catch (e) {
+        return res.status(400).json({ status: 400, message: "Control: " + e.message });
+    }
+}
+
+exports.getTask = async (req, res) => {
+    try {
+        var user = await TaskService.getTask(req,res);
         if (user === 0) 
         {
-            return res.status(500).json({ status: 500, data: user, message: "Error User by id" });
+            return res.status(500).json({ status: 500, data: user, message: "Error Task by id" });
         }
         else
         {
-            return res.status(200).json({ status: 200, data: user, message: "User by id" });
+            return res.status(200).json({ status: 200, data: user, message: "Task by id" });
         }
         
     } catch (e) {
@@ -26,33 +35,33 @@ exports.getUser = async (req, res) => {
     }
 }
 
-exports.setUser = async (req,res) => {
+exports.setTask = async (req,res) => {
     try {
-        var user = await TaskService.setUser(req,res);
+        var task = await TaskService.setTasks(req,res);
 
-        return res.status(200).json({ status: 200, data: user, message: "Add User" });
+        return res.status(200).json({ status: 200, data: task, message: "Add Task" });
         
     } catch (e) {
         return res.status(400).json({ status: 400, message: "Control: " + e.message });
     }
 }
 
-exports.updateUser = async (req,res) => {
+exports.updateTask = async (req,res) => {
     try {
-        var user = await TaskService.updateUser(req,res);
+        var task = await TaskService.updateTask(req,res);
 
-        return res.status(200).json({ status: 200, data: user, message: "Update User" });
+        return res.status(200).json({ status: 200, data: task, message: "Update Task status" });
         
     } catch (e) {
         return res.status(400).json({ status: 400, message: "Control: " + e.message });
     }
 }
 
-exports.deleteUser = async (req,res) => {
+exports.deleteTask = async (req,res) => {
     try {
-        var user = await TaskService.deleteUser(req,res);
+        var user = await TaskService.deleteTask(req,res);
 
-        return res.status(200).json({ status: 200, data: user, message: "Delete User" });
+        return res.status(200).json({ status: 200, data: user, message: "Delete Task by ID" });
         
     } catch (e) {
         return res.status(400).json({ status: 400, message: "Control: " + e.message });
