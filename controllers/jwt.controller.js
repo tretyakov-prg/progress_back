@@ -22,6 +22,15 @@ exports.setJWT = async (req, res) => {
         var token = await JWTService.setJWT(req)
         return res.status(200).json({ status: 200, accessToken: token, message: "Set jwt" });
     } catch (e) {
+        return res.status(400).json({ status: 400, message: "Login error: " + e.message });
+    }
+}
+
+exports.regJWT = async (req, res) => {
+    try {
+        var token = await JWTService.regJWT(req)
+        return res.status(200).json({ status: 200, accessToken: token, message: "Reg jwt" });
+    } catch (e) {
         return res.status(400).json({ status: 400, message: "Control: " + e.message });
     }
 }
