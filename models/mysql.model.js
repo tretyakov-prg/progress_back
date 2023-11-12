@@ -1,5 +1,5 @@
 var mysql = require('mysql2');
-const config = require('../config/db.config');
+//const config = require('../config/db.config');
 
 var conn = mysql.createConnection({
   host: process.env.HOST, // Replace with your host name
@@ -12,5 +12,15 @@ var pool = mysql.createPool({
   user: process.env.USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE
-}).promise();
+}).promise()
+
+pool.on('connection', function(connection) {
+  console.log(`Connected to MySql db: ${process.env.DATABASE}`);
+});
+
+pool.on('error', function(err) {
+  console.log('Data Base Error: ' + err);
+  throw err;
+});
+
 module.exports = pool;

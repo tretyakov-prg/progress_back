@@ -1,19 +1,25 @@
 var createError = require('http-errors');
 var express = require('express');
+const fs = require("fs");
 var path = require('path');
 require('dotenv/config');
 const bodyParser = require("body-parser");
 const cors = require('cors');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var morgan = require('morgan');
 
 var indexRouter = require('./routes/index.router');
 var JWTRouter = require('./routes/jwt.router');
 var TaskRouter = require('./routes/task.router');
 
 const Port = process.env.PORT || 7000
-
+//var logger = morgan('combined');
 var app = express();
+
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+
+// setup the logger
+app.use(morgan('short', { stream: accessLogStream }))
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -24,7 +30,6 @@ app.use(cors());
 app.use('/jwt', JWTRouter);
 app.use('/task', TaskRouter);
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -47,5 +52,8 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(Port, function () {
-    console.log(`Node server is running localhost:${Port}`);
+    console.debug(`Node server is running localhost:${Port}`);
+})
+.on('error', (e) => {
+  console.log('Error happened: ', e.message)
 });
